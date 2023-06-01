@@ -29,31 +29,32 @@ function submitForm(event) {
   userMessageDiv.innerText = input;
   logDiv.appendChild(userMessageDiv);
 
-  // Display oscillating dots while waiting for the response
-  const dots = document.createElement("span");
-  dots.innerText = "...";
-  userMessageDiv.appendChild(dots);
-
   query(data).then((response) => {
-    const answer = response["out-0"];
     const botMessageDiv = document.createElement("div");
     botMessageDiv.classList.add("message", "bot-message");
-    botMessageDiv.innerText = answer;
+    
+    // Display oscillating dots while waiting for the response
+    const dots = document.createElement("span");
+    dots.innerText = "...";
+    botMessageDiv.appendChild(dots);
+
     logDiv.appendChild(botMessageDiv);
 
-    log.push({ question: input, answer });
+    log.push({ question: input, answer: "..." });
 
     // Update the log display and scroll to the bottom
     logDiv.scrollTop = logDiv.scrollHeight;
-  }).finally(() => {
-    // Remove the oscillating dots once the response is received
-    dots.remove();
+
+    // Remove the oscillating dots and set the actual response
+    setTimeout(() => {
+      dots.remove();
+      botMessageDiv.innerText = response["out-0"];
+    }, 1000); // Delay of 1 second to simulate loading
   });
 
   // Clear the input field
   document.getElementById("input").value = "";
 }
-
 
 function updateLog() {
   const logDiv = document.getElementById("log");
