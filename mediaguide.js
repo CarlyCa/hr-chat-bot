@@ -29,32 +29,38 @@ function submitForm(event) {
   userMessageDiv.innerText = input;
   logDiv.appendChild(userMessageDiv);
 
+  const botMessageDiv = document.createElement("div");
+  botMessageDiv.classList.add("message", "bot-message");
+
+  // Display oscillating dots while waiting for the response
+  const dots = document.createElement("span");
+  dots.innerText = "...";
+  botMessageDiv.appendChild(dots);
+
+  logDiv.appendChild(botMessageDiv);
+
+  log.push({ question: input, answer: "..." });
+
+  // Update the log display and scroll to the bottom
+  logDiv.scrollTop = logDiv.scrollHeight;
+
   query(data).then((response) => {
-    const botMessageDiv = document.createElement("div");
-    botMessageDiv.classList.add("message", "bot-message");
-    
-    // Display oscillating dots while waiting for the response
-    const dots = document.createElement("span");
-    dots.innerText = "...";
-    botMessageDiv.appendChild(dots);
+    // Remove the oscillating dots
+    dots.remove();
 
-    logDiv.appendChild(botMessageDiv);
+    // Set the actual response
+    botMessageDiv.innerText = response["out-0"];
 
-    log.push({ question: input, answer: "..." });
+    log[log.length - 1].answer = response["out-0"];
 
     // Update the log display and scroll to the bottom
     logDiv.scrollTop = logDiv.scrollHeight;
-
-    // Remove the oscillating dots and set the actual response
-    setTimeout(() => {
-      dots.remove();
-      botMessageDiv.innerText = response["out-0"];
-    }, 1000); // Delay of 1 second to simulate loading
   });
 
   // Clear the input field
   document.getElementById("input").value = "";
 }
+
 
 function updateLog() {
   const logDiv = document.getElementById("log");
