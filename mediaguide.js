@@ -2,7 +2,7 @@ let log = []; // Array to store the chat messages
 
 async function query(data) {
   const response = await fetch(
-    "https://www.stack-inference.com/run_deployed_flow?flow_id=645b98e21fa22506aa50935f&org=ac522f2a-ccb2-4608-8bab-3e1ccf74af42",
+    "https://www.stack-inference.com/run_deployed_flow?flow_id=646f794b6e4e3bafcb2df3d1&org=ac522f2a-ccb2-4608-8bab-3e1ccf74af42",
     {
       headers: {'Authorization':
      'Bearer f39536ea-6cd4-4afe-ac99-bd9babd2cd21',
