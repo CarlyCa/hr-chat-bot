@@ -1,1 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat Bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-image: url("https://cdn.midjourney.com/57c44160-3af5-4d1b-a094-3d1010d149a9/grid_0.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: rgba(242, 242, 242, 0.5);
+        padding: 10px;
+      }
+
+      .chat-container {
+        max-width: 500px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-log {
+        padding: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .question-box {
+        background-color: #f1f0f0;
+        padding: 10px;
+        border-radius: 0 0 10px 10px;
+      }
+
+      #chat-form {
+        display: flex;
+        align-items: center;
+      }
+
+      #input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+      }
+
+      button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #008c99;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 10px;
+      }
+
+      .message {
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        max-width: 80%;
+      }
+
+      .bot-message {
+        background-color: #d8d8d8;
+        color: #333;
+      }
+
+      .user-message {
+        align-self: flex-end;
+        background-color: #008c99;
+        margin-left: auto;
+        color: white;
+      }
+
+      .intro-text {
+        text-align: center;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="intro-text">
+        <h1>Welcome to the HSE HR Bot</h1>
+        <p>Feel free to ask any questions regarding the Media Guide.</p>
+      </div>
+    <div class="chat-container">
+      <div id="log" class="chat-log"></div>
+      <div class="question-box">
+        <form id="chat-form" onsubmit="submitForm(event)">
+          <input type="text" id="input" placeholder="Ask a question" />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      let log = []; // Array to store the chat messages
+
+      async function query(data) {
+        const response = await fetch(
+          "https://www.stack-inference.com/run_deployed_flow?flow_id=64623ed585854f4fa1d09146&org=ac522f2a-ccb2-4608-8bab-3e1ccf74af42",
+          {
+            headers: {
+              'Authorization': 'Bearer f39536ea-6cd4-4afe-ac99-bd9babd2cd21',
+              'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(data),
+          }
+        );
+        const result = await response.json();
+        return result;
+      }
+
+      function submitForm(event) {
+        event.preventDefault();
+        const input = document.getElementById("input").value;
+        const data = {
+          "in-0": input
+        };
+        const logDiv = document.getElementById("log");
+
+        const userMessageDiv = document.createElement("div");
+        userMessageDiv.classList.add("message", "user-message");
+        userMessageDiv.innerText = input;
+        logDiv.appendChild(userMessageDiv);
+
+        // Display oscillating dots while waiting for the response
+        const loadingDiv = document.createElement("div");
+        loadingDiv.classList.add("message", "loading-message");
+        loadingDiv.innerText = "...";
+        logDiv.appendChild(loadingDiv);
+
+        query(data).then((response) => {
+          const answer = response["out-0"];
+          const botMessageDiv = document.createElement("div");
+          botMessageDiv.classList.add("message", "bot-message");
+          botMessageDiv.innerText = answer;
+
+          // Remove the loading dots and append the bot's answer
+          logDiv.removeChild(loadingDiv);
+          logDiv.appendChild(botMessageDiv);
+
+          log.push({ question: input, answer });
+
+          // Update the log display and scroll to the bottom
+          logDiv.scrollTop = logDiv.scrollHeight;
+        });
+
+        // Clear the input field
+        document.getElementById("input").value = "";
+      }
+    </script>
+  </body>
+</html>
 
